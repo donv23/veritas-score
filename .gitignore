@@ -1,4 +1,6 @@
 *
 !public/
 !public/**
+!docs/
+!docs/**
 !.gitignore
