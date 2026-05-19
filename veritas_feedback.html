@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VERITAS — Feedback</title>
+<meta name="description" content="Cinque domande sulla tua esperienza con VERITAS. Due minuti di tempo, valore alto per la prossima iterazione del protocollo.">
+<style>
+  :root {
+    --navy: #0F1E3D;
+    --gold: #C9A961;
+    --cream: #F5F0E5;
+    --grey: #6B6B6B;
+    --grey-light: #E5E5E0;
+    --green: #5CAF60;
+    --serif: Georgia, 'Times New Roman', serif;
+    --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Inter, system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: var(--sans);
+    color: #1a1a1a;
+    line-height: 1.6;
+    background: linear-gradient(180deg, #fff 0%, var(--cream) 100%);
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+  }
+  .container { max-width: 720px; margin: 0 auto; padding: 48px 24px; }
+
+  header { text-align: center; margin-bottom: 48px; }
+  .emblem { width: 90px; height: 90px; margin-bottom: 20px; }
+  h1 {
+    font-family: var(--serif); font-weight: bold;
+    font-size: 44px; color: var(--navy);
+    letter-spacing: 3px; margin-bottom: 12px;
+  }
+  .subtitle {
+    font-family: var(--serif); font-style: italic;
+    font-size: 18px; color: var(--grey);
+  }
+
+  .intro {
+    background: #fff; border-left: 3px solid var(--gold);
+    padding: 24px 28px; margin: 36px 0;
+    font-size: 16px; color: #333;
+  }
+  .intro p { margin-bottom: 10px; }
+  .intro p:last-child { margin-bottom: 0; }
+
+  form { background: #fff; padding: 36px 32px; border-radius: 4px; border: 1px solid var(--grey-light); }
+
+  .question {
+    margin-bottom: 32px;
+    padding-bottom: 28px;
+    border-bottom: 1px solid var(--grey-light);
+  }
+  .question:last-of-type { border-bottom: none; }
+  .question-number {
+    font-family: var(--serif); color: var(--gold);
+    font-size: 14px; font-weight: bold;
+    letter-spacing: 2px; margin-bottom: 8px; text-transform: uppercase;
+  }
+  .question-text {
+    font-family: var(--serif); font-size: 19px; color: var(--navy);
+    margin-bottom: 16px; line-height: 1.4;
+  }
+  .question-hint {
+    font-size: 13px; color: var(--grey);
+    margin-bottom: 16px; font-style: italic;
+  }
+
+  .options { display: flex; flex-direction: column; gap: 10px; }
+  .option {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 16px; background: var(--cream);
+    border-radius: 4px; cursor: pointer;
+    border: 1px solid transparent;
+    transition: all 0.15s;
+  }
+  .option:hover { background: #ede8dd; border-color: var(--gold); }
+  .option input[type="radio"], .option input[type="checkbox"] {
+    accent-color: var(--navy); width: 18px; height: 18px;
+  }
+  .option label { cursor: pointer; flex: 1; font-size: 15px; }
+
+  textarea, input[type="email"] {
+    width: 100%;
+    padding: 14px 16px;
+    font-family: var(--sans); font-size: 15px;
+    border: 1px solid var(--grey-light);
+    border-radius: 4px; background: var(--cream);
+    color: #1a1a1a;
+    transition: border-color 0.15s;
+  }
+  textarea:focus, input[type="email"]:focus {
+    outline: none; border-color: var(--gold); background: #fff;
+  }
+  textarea { min-height: 110px; resize: vertical; font-family: var(--sans); }
+
+  .submit-row { text-align: center; margin-top: 8px; }
+  .btn-submit {
+    background: var(--navy); color: #fff;
+    border: 2px solid var(--navy);
+    padding: 16px 48px; font-weight: 600; font-size: 15px;
+    letter-spacing: 1px; cursor: pointer; border-radius: 2px;
+    text-transform: uppercase; transition: all 0.2s;
+    font-family: var(--sans);
+  }
+  .btn-submit:hover { background: #1a2b4f; }
+  .btn-submit:active { transform: translateY(1px); }
+
+  .privacy {
+    font-size: 13px; color: var(--grey);
+    text-align: center; margin-top: 24px;
+    line-height: 1.5;
+  }
+  .privacy a { color: var(--navy); }
+
+  .thanks {
+    display: none;
+    background: #fff; padding: 48px 32px; border-radius: 4px;
+    border-left: 3px solid var(--green);
+    text-align: center;
+  }
+  .thanks h2 {
+    font-family: var(--serif); color: var(--navy);
+    font-size: 28px; margin-bottom: 16px;
+  }
+  .thanks p { color: #333; margin-bottom: 16px; }
+  .thanks a {
+    display: inline-block; margin-top: 12px;
+    color: var(--navy); text-decoration: none;
+    border-bottom: 1px solid var(--gold);
+    font-weight: 600;
+  }
+
+  footer {
+    text-align: center; margin-top: 56px;
+    font-size: 13px; color: var(--grey);
+  }
+  footer a { color: var(--navy); text-decoration: none; }
+
+  @media (max-width: 600px) {
+    h1 { font-size: 32px; letter-spacing: 2px; }
+    .container { padding: 32px 16px; }
+    form { padding: 24px 18px; }
+    .question-text { font-size: 17px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <svg class="emblem" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg" aria-label="VERITAS">
+      <path d="M 200,50 A 150,150 0 0,1 350,200 L 320,200 A 120,120 0 0,0 200,80 Z" fill="#5CAF60"/>
+      <path d="M 350,200 A 150,150 0 0,1 200,350 L 200,320 A 120,120 0 0,0 320,200 Z" fill="#E8B72C"/>
+      <path d="M 200,350 A 150,150 0 0,1 50,200 L 80,200 A 120,120 0 0,0 200,320 Z" fill="#E58428"/>
+      <path d="M 50,200 A 150,150 0 0,1 200,50 L 200,80 A 120,120 0 0,0 80,200 Z" fill="#D04444"/>
+      <circle cx="200" cy="200" r="115" fill="#0F1E3D"/>
+      <path d="M 142,128 L 175,128 L 178,140 L 200,225 L 222,140 L 225,128 L 258,128 L 218,265 L 182,265 Z" fill="#C9A961"/>
+      <circle cx="200" cy="105" r="4" fill="#C9A961"/>
+    </svg>
+    <h1>VERITAS</h1>
+    <p class="subtitle">cinque domande, due minuti</p>
+  </header>
+
+  <div class="intro">
+    <p>Stai per aiutare la prossima iterazione del protocollo. VERITAS è uno strumento sperimentale: il valore arriva dal contatto con casi reali, non da quanto è elegante in astratto.</p>
+    <p>Le domande sono pensate per emergere le cose che funzionano davvero, le cose che non funzionano, e la zona grigia in mezzo. Nessun campo è obbligatorio, salvo l'invio del form stesso.</p>
+  </div>
+
+  <form id="feedback-form" action="https://formspree.io/f/REPLACE_WITH_YOUR_ID" method="POST">
+
+    <div class="question">
+      <div class="question-number">01</div>
+      <div class="question-text">Hai effettivamente provato VERITAS almeno una volta?</div>
+      <div class="options">
+        <div class="option">
+          <input type="radio" id="q1-a" name="q1_provato" value="sì_più_volte" required>
+          <label for="q1-a">Sì, più volte</label>
+        </div>
+        <div class="option">
+          <input type="radio" id="q1-b" name="q1_provato" value="sì_una_volta">
+          <label for="q1-b">Sì, una volta sola</label>
+        </div>
+        <div class="option">
+          <input type="radio" id="q1-c" name="q1_provato" value="no_solo_letto">
+          <label for="q1-c">No, ho solo letto la presentazione</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="question">
+      <div class="question-number">02</div>
+      <div class="question-text">La domanda che conta davvero: lo score ti ha mai fatto verificare qualcosa che altrimenti avresti dato per scontato?</div>
+      <div class="question-hint">Questa è la metrica che misura se VERITAS sta facendo il suo lavoro reale.</div>
+      <div class="options">
+        <div class="option">
+          <input type="radio" id="q2-a" name="q2_verifica" value="sì">
+          <label for="q2-a">Sì, almeno una volta</label>
+        </div>
+        <div class="option">
+          <input type="radio" id="q2-b" name="q2_verifica" value="forse">
+          <label for="q2-b">Forse, ma non ne sono certo</label>
+        </div>
+        <div class="option">
+          <input type="radio" id="q2-c" name="q2_verifica" value="no">
+          <label for="q2-c">No, mai</label>
+        </div>
+        <div class="option">
+          <input type="radio" id="q2-d" name="q2_verifica" value="non_applicabile">
+          <label for="q2-d">Non l'ho ancora usato abbastanza per dirlo</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="question">
+      <div class="question-number">03</div>
+      <div class="question-text">Quale parte del protocollo ti sembra più utile?</div>
+      <div class="question-hint">Selezione singola — quella che salveresti se dovessi sacrificare il resto.</div>
+      <div class="options">
+        <div class="option">
+          <input type="radio" id="q3-a" name="q3_utile" value="modalità">
+          <label for="q3-a">La distinzione Lite / Verified / Expert</label>
+        </div>
+        <div class="option">
+          <input type="radio" id="q3-b" name="q3_utile" value="claim_critici">
+          <label for="q3-b">I Claim critici con stato esplicito</label>
+        </div>
+        <div class="option">
+          <input type="radio" id="q3-c" name="q3_utile" value="rischio">
+          <label for="q3-c">Il Rischio d'uso (basso/medio/alto/critico)</label>
+        </div>
+        <div class="option">
+          <input type="radio" id="q3-d" name="q3_utile" value="cap_non_verifica">
+          <label for="q3-d">Il Cap di non-verifica (max 84 in Lite)</label>
+        </div>
+        <div class="option">
+          <input type="radio" id="q3-e" name="q3_utile" value="due_numeri">
+          <label for="q3-e">Il Doppio numero (Affidabilità + Utilità)</label>
+        </div>
+        <div class="option">
+          <input type="radio" id="q3-f" name="q3_utile" value="altro">
+          <label for="q3-f">Altro (specifica sotto)</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="question">
+      <div class="question-number">04</div>
+      <div class="question-text">Cosa funziona meno o ti sembra da rivedere?</div>
+      <div class="question-hint">Risposte brutali sono benvenute. Anche "tutto bene, niente da segnalare" è una risposta utile.</div>
+      <textarea name="q4_critica" placeholder="Scrivi liberamente..."></textarea>
+    </div>
+
+    <div class="question">
+      <div class="question-number">05</div>
+      <div class="question-text">Vuoi essere ricontattato quando esce la prossima versione?</div>
+      <div class="question-hint">Opzionale. Solo per chi è interessato all'iterazione successiva, niente newsletter generiche.</div>
+      <input type="email" name="q5_email" placeholder="email (facoltativo)">
+    </div>
+
+    <div class="submit-row">
+      <button type="submit" class="btn-submit">Invia feedback</button>
+    </div>
+
+    <div class="privacy">
+      Le risposte vengono inviate a Formspree e poi inoltrate via email all'autore del progetto.
+      <br>Nessun tracker, nessun cookie, nessuna analytics. Le email non vengono mai condivise.
+    </div>
+
+  </form>
+
+  <div class="thanks" id="thanks">
+    <h2>Grazie.</h2>
+    <p>Hai contribuito alla v4.2.</p>
+    <p>Se hai lasciato l'email, ti scrivo personalmente quando la nuova versione sarà pronta — senza newsletter automatiche, senza spam.</p>
+    <a href="./">Torna alla pagina di VERITAS →</a>
+  </div>
+
+  <footer>
+    <p><a href="./">VERITAS</a> · score di affidabilità per ogni IA · v4.1 · 2026</p>
+  </footer>
+</div>
+
+<script>
+  document.getElementById('feedback-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    var form = this;
+    var data = new FormData(form);
+    fetch(form.action, {
+      method: 'POST',
+      body: data,
+      headers: { 'Accept': 'application/json' }
+    }).then(function(response) {
+      if (response.ok) {
+        form.style.display = 'none';
+        document.getElementById('thanks').style.display = 'block';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else {
+        alert('Si è verificato un errore. Riprova tra qualche istante.');
+      }
+    }).catch(function() {
+      alert('Si è verificato un errore di rete. Riprova tra qualche istante.');
+    });
+  });
+</script>
+
+</body>
+</html>

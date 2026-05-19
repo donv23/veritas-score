@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VERITAS — score di affidabilità per ogni IA</title>
+<meta name="description" content="Veritas è uno strumento di auto-valutazione che assegna a ogni risposta IA uno score di affidabilità su 100 punti. Integrabile in qualsiasi modello: Claude, GPT, Grok, Gemini.">
+<meta property="og:title" content="VERITAS — score di affidabilità per ogni IA">
+<meta property="og:description" content="Verità misurata, non promessa.">
+<style>
+  :root {
+    --navy: #0F1E3D;
+    --gold: #C9A961;
+    --cream: #F5F0E5;
+    --grey: #6B6B6B;
+    --grey-light: #E5E5E0;
+    --green: #5CAF60;
+    --yellow: #E8B72C;
+    --orange: #E58428;
+    --red: #D04444;
+    --serif: Georgia, 'Times New Roman', serif;
+    --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Inter, system-ui, sans-serif;
+    --mono: 'JetBrains Mono', 'SF Mono', Consolas, 'Courier New', monospace;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: var(--sans);
+    color: #1a1a1a;
+    line-height: 1.6;
+    background: #fff;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .container { max-width: 920px; margin: 0 auto; padding: 0 24px; }
+  .container-wide { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+
+  /* ===== NAV ===== */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(255,255,255,0.96);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--grey-light);
+    padding: 14px 0;
+  }
+  .nav-inner {
+    max-width: 1100px; margin: 0 auto; padding: 0 24px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .nav-brand {
+    display: flex; align-items: center; gap: 10px;
+    font-family: var(--serif); font-weight: bold; font-size: 20px;
+    color: var(--navy); text-decoration: none; letter-spacing: 2px;
+  }
+  .nav-brand svg { width: 32px; height: 32px; }
+  .nav-links { display: flex; gap: 28px; }
+  .nav-links a {
+    color: var(--grey); text-decoration: none; font-size: 14px;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--navy); }
+  @media (max-width: 720px) { .nav-links { display: none; } }
+
+  /* ===== HERO ===== */
+  .hero {
+    padding: 88px 0 96px;
+    text-align: center;
+    background: linear-gradient(180deg, #fff 0%, var(--cream) 100%);
+  }
+  .hero-emblem { width: 180px; height: 180px; margin-bottom: 32px; }
+  .hero h1 {
+    font-family: var(--serif); font-weight: bold;
+    font-size: 80px; color: var(--navy);
+    letter-spacing: 6px; margin-bottom: 12px;
+    line-height: 1;
+  }
+  .hero .tagline {
+    font-family: var(--serif); font-style: italic;
+    font-size: 22px; color: var(--grey); margin-bottom: 8px;
+  }
+  .hero .payoff {
+    font-family: var(--serif); font-size: 24px; color: var(--navy);
+    margin: 40px 0 36px; font-style: italic;
+  }
+  .hero .cta-group { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+  .btn {
+    display: inline-block; padding: 14px 28px;
+    background: var(--navy); color: #fff;
+    border: 2px solid var(--navy);
+    text-decoration: none; font-weight: 600; font-size: 15px;
+    letter-spacing: 0.5px; cursor: pointer; transition: all 0.2s;
+    border-radius: 2px;
+  }
+  .btn:hover { background: #1a2b4f; }
+  .btn-ghost { background: transparent; color: var(--navy); }
+  .btn-ghost:hover { background: var(--navy); color: #fff; }
+
+  @media (max-width: 720px) {
+    .hero h1 { font-size: 52px; letter-spacing: 4px; }
+    .hero-emblem { width: 140px; height: 140px; }
+  }
+
+  /* ===== SECTIONS ===== */
+  section { padding: 72px 0; }
+  section.alt { background: var(--cream); }
+  section.dark { background: var(--navy); color: #fff; }
+
+  h2 {
+    font-family: var(--serif); font-weight: bold;
+    font-size: 38px; color: var(--navy);
+    margin-bottom: 24px; letter-spacing: -0.5px;
+  }
+  section.dark h2 { color: #fff; }
+  h3 {
+    font-family: var(--serif); font-weight: bold;
+    font-size: 22px; color: var(--navy);
+    margin: 24px 0 12px;
+  }
+  section.dark h3 { color: var(--gold); }
+
+  p { margin-bottom: 16px; font-size: 17px; }
+  p.lead { font-size: 19px; color: var(--grey); }
+  section.dark p { color: #d8d8d4; }
+
+  .eyebrow {
+    text-transform: uppercase; letter-spacing: 3px;
+    font-size: 12px; color: var(--gold); font-weight: 600;
+    margin-bottom: 12px;
+  }
+
+  /* ===== TRE REGOLE CARDS ===== */
+  .rules-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
+    margin-top: 36px;
+  }
+  @media (max-width: 800px) { .rules-grid { grid-template-columns: 1fr; } }
+  .rule-card {
+    background: #fff; border: 1px solid var(--grey-light);
+    padding: 28px; border-radius: 4px;
+    border-top: 4px solid var(--gold);
+  }
+  .rule-card .num {
+    font-family: var(--serif); font-size: 36px; color: var(--gold);
+    font-weight: bold; line-height: 1; margin-bottom: 12px;
+  }
+  .rule-card h4 {
+    font-family: var(--serif); font-size: 19px;
+    color: var(--navy); margin-bottom: 10px;
+  }
+  .rule-card p { font-size: 15px; color: var(--grey); margin: 0; }
+
+  /* ===== PROMPT TABS ===== */
+  .tabs {
+    display: flex; gap: 4px; border-bottom: 1px solid var(--grey-light);
+    margin: 28px 0 0;
+  }
+  .tab {
+    padding: 10px 18px; background: none; border: none;
+    cursor: pointer; font-family: var(--sans);
+    font-size: 14px; color: var(--grey);
+    border-bottom: 3px solid transparent; margin-bottom: -1px;
+    transition: all 0.15s;
+  }
+  .tab.active { color: var(--navy); border-bottom-color: var(--navy); font-weight: 600; }
+  .tab:hover { color: var(--navy); }
+
+  .prompt-box {
+    background: var(--navy); color: #e8e6dd;
+    border-radius: 4px; margin-top: 16px;
+    position: relative; overflow: hidden;
+  }
+  .prompt-header {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 12px 16px; background: #0a1430;
+    font-size: 12px; color: var(--gold); letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  .copy-btn {
+    background: var(--gold); color: var(--navy);
+    border: none; padding: 6px 14px; border-radius: 2px;
+    font-size: 12px; font-weight: 600; cursor: pointer;
+    text-transform: uppercase; letter-spacing: 0.5px;
+    transition: all 0.15s; font-family: var(--sans);
+  }
+  .copy-btn:hover { background: #d8b86f; }
+  .copy-btn.copied { background: var(--green); color: #fff; }
+  .prompt-code {
+    padding: 20px 22px; font-family: var(--mono);
+    font-size: 13px; line-height: 1.6;
+    white-space: pre-wrap; overflow-x: auto;
+  }
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  /* ===== EXAMPLE BEFORE/AFTER ===== */
+  .compare {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 24px;
+    margin-top: 32px;
+  }
+  @media (max-width: 800px) { .compare { grid-template-columns: 1fr; } }
+  .compare-box {
+    background: #fff; border: 1px solid var(--grey-light);
+    padding: 24px; border-radius: 4px;
+  }
+  .compare-box.before { border-left: 4px solid var(--grey); }
+  .compare-box.after { border-left: 4px solid var(--gold); }
+  .compare-label {
+    text-transform: uppercase; letter-spacing: 2px;
+    font-size: 11px; font-weight: 600; margin-bottom: 12px;
+  }
+  .compare-box.before .compare-label { color: var(--grey); }
+  .compare-box.after .compare-label { color: var(--gold); }
+  .compare-content { font-size: 14px; line-height: 1.6; color: #333; }
+  .score-block {
+    margin-top: 16px; padding: 14px 16px;
+    background: var(--cream); border-radius: 3px;
+    font-family: var(--mono); font-size: 12px;
+    line-height: 1.7; white-space: pre-wrap; color: var(--navy);
+  }
+
+  /* ===== RUBRIC ===== */
+  .dim-list {
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px;
+    margin-top: 32px;
+  }
+  @media (max-width: 720px) { .dim-list { grid-template-columns: 1fr; } }
+  .dim {
+    background: rgba(255,255,255,0.05); border-left: 3px solid var(--gold);
+    padding: 18px 22px;
+  }
+  .dim-name { color: var(--gold); font-size: 13px; letter-spacing: 2px;
+              text-transform: uppercase; font-weight: 600; margin-bottom: 6px; }
+  .dim h4 { font-family: var(--serif); font-size: 21px; color: #fff;
+            margin-bottom: 8px; font-weight: bold; }
+  .dim p { color: #d8d8d4; font-size: 14px; margin: 0; }
+
+  /* ===== BOLLINI ===== */
+  .bollini-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;
+    margin-top: 32px;
+  }
+  @media (max-width: 720px) { .bollini-grid { grid-template-columns: repeat(2, 1fr); } }
+  .bollino {
+    background: #fff; padding: 24px 20px; border-radius: 4px;
+    text-align: center; border-top: 4px solid;
+  }
+  .bollino.verde { border-top-color: var(--green); }
+  .bollino.giallo { border-top-color: var(--yellow); }
+  .bollino.arancio { border-top-color: var(--orange); }
+  .bollino.rosso { border-top-color: var(--red); }
+  .bollino .dot {
+    font-size: 42px; line-height: 1; margin-bottom: 8px;
+  }
+  .bollino .range {
+    font-family: var(--serif); font-size: 22px; font-weight: bold;
+    color: var(--navy); margin-bottom: 4px;
+  }
+  .bollino .label {
+    font-size: 13px; color: var(--grey); line-height: 1.4;
+  }
+
+  /* ===== LIMITS ===== */
+  .limits {
+    background: var(--cream); padding: 28px 32px;
+    border-radius: 4px; border-left: 3px solid var(--gold);
+    margin-top: 24px;
+  }
+  .limits ul { list-style: none; padding: 0; margin: 12px 0 0; }
+  .limits li {
+    padding: 8px 0 8px 24px; position: relative;
+    color: var(--grey); font-size: 15px;
+  }
+  .limits li::before {
+    content: "—"; position: absolute; left: 0; color: var(--gold);
+  }
+
+  /* ===== FOOTER ===== */
+  footer {
+    background: var(--navy); color: #d8d8d4;
+    padding: 56px 0 32px; text-align: center;
+    font-size: 14px;
+  }
+  footer h3 { font-family: var(--serif); color: #fff; margin-bottom: 12px; font-size: 24px; }
+  footer .credits { color: var(--gold); margin: 24px 0; font-style: italic; }
+  footer a { color: var(--gold); text-decoration: none; }
+  footer a:hover { text-decoration: underline; }
+
+  /* ===== EMBLEM SVG inline component ===== */
+  .emblem { display: inline-block; vertical-align: middle; }
+</style>
+</head>
+<body>
+
+<!-- ============== NAV ============== -->
+<nav>
+  <div class="nav-inner">
+    <a href="#top" class="nav-brand">
+      <svg class="emblem" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path d="M 200,50 A 150,150 0 0,1 350,200 L 320,200 A 120,120 0 0,0 200,80 Z" fill="#5CAF60"/>
+        <path d="M 350,200 A 150,150 0 0,1 200,350 L 200,320 A 120,120 0 0,0 320,200 Z" fill="#E8B72C"/>
+        <path d="M 200,350 A 150,150 0 0,1 50,200 L 80,200 A 120,120 0 0,0 200,320 Z" fill="#E58428"/>
+        <path d="M 50,200 A 150,150 0 0,1 200,50 L 200,80 A 120,120 0 0,0 80,200 Z" fill="#D04444"/>
+        <circle cx="200" cy="200" r="115" fill="#0F1E3D"/>
+        <path d="M 142,128 L 175,128 L 178,140 L 200,225 L 222,140 L 225,128 L 258,128 L 218,265 L 182,265 Z" fill="#C9A961"/>
+        <circle cx="200" cy="105" r="4" fill="#C9A961"/>
+      </svg>
+      VERITAS
+    </a>
+    <div class="nav-links">
+      <a href="#manifesto">Manifesto</a>
+      <a href="#regole">Regole</a>
+      <a href="#prompt">Prompt</a>
+      <a href="#esempio">Esempio</a>
+      <a href="#rubrica">Rubrica</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ============== HERO ============== -->
+<section class="hero" id="top">
+  <svg class="hero-emblem" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg" aria-label="Logo VERITAS">
+    <path d="M 200,50 A 150,150 0 0,1 350,200 L 320,200 A 120,120 0 0,0 200,80 Z" fill="#5CAF60"/>
+    <path d="M 350,200 A 150,150 0 0,1 200,350 L 200,320 A 120,120 0 0,0 320,200 Z" fill="#E8B72C"/>
+    <path d="M 200,350 A 150,150 0 0,1 50,200 L 80,200 A 120,120 0 0,0 200,320 Z" fill="#E58428"/>
+    <path d="M 50,200 A 150,150 0 0,1 200,50 L 200,80 A 120,120 0 0,0 80,200 Z" fill="#D04444"/>
+    <line x1="200" y1="48" x2="200" y2="82" stroke="#fff" stroke-width="3"/>
+    <line x1="352" y1="200" x2="318" y2="200" stroke="#fff" stroke-width="3"/>
+    <line x1="200" y1="352" x2="200" y2="318" stroke="#fff" stroke-width="3"/>
+    <line x1="48" y1="200" x2="82" y2="200" stroke="#fff" stroke-width="3"/>
+    <circle cx="200" cy="200" r="115" fill="#0F1E3D"/>
+    <circle cx="200" cy="200" r="115" fill="none" stroke="#C9A961" stroke-width="1.5" opacity="0.5"/>
+    <path d="M 142,128 L 175,128 L 178,140 L 200,225 L 222,140 L 225,128 L 258,128 L 218,265 L 182,265 Z" fill="#C9A961"/>
+    <circle cx="200" cy="105" r="4" fill="#C9A961"/>
+  </svg>
+  <h1>VERITAS</h1>
+  <p class="tagline">score di affidabilità per ogni IA</p>
+  <p class="payoff">Verità misurata, non promessa.</p>
+  <div class="cta-group">
+    <a href="#prompt" class="btn">Copia il prompt</a>
+    <a href="#manifesto" class="btn btn-ghost">Leggi il manifesto</a>
+  </div>
+</section>
+
+<!-- ============== MANIFESTO ============== -->
+<section id="manifesto">
+  <div class="container">
+    <div class="eyebrow">Manifesto</div>
+    <h2>Una risposta sicura e una risposta fragile, oggi, sembrano uguali.</h2>
+    <p class="lead">Ogni risposta di un'intelligenza artificiale arriva con lo stesso peso, lo stesso tono, la stessa apparente sicurezza. Quella corretta e quella sbagliata si vestono allo stesso modo. Per chi legge è impossibile distinguere il fatto verificato dall'invenzione plausibile.</p>
+    <p>Veritas inserisce una scala. Quattro dimensioni — verificabilità, coerenza, calibrazione, specificità — diventano un numero da 0 a 100 e un colore. Non un giudizio assoluto, ma una bussola onesta: dove fidarsi, dove scavare, dove non usare la risposta senza una verifica indipendente.</p>
+    <p>Lo strumento è progettato per essere integrato in qualsiasi modello — Claude, GPT, Grok, Gemini, Mistral, Llama — perché l'affidabilità non è proprietà di un fornitore: è una pratica.</p>
+  </div>
+</section>
+
+<!-- ============== TRE REGOLE ============== -->
+<section class="alt" id="regole">
+  <div class="container">
+    <div class="eyebrow">Cuore del sistema</div>
+    <h2>Le tre regole della v3</h2>
+    <p class="lead">Veritas si distingue dai sistemi naïve di self-scoring per tre meccanismi pensati per disinnescare gli errori più pericolosi: quelli plausibili, ben argomentati, e completamente sbagliati.</p>
+    <div class="rules-grid">
+      <div class="rule-card">
+        <div class="num">01</div>
+        <h4>Regola di Taglio</h4>
+        <p>Se nella risposta è presente <strong>un errore fattuale identificato</strong> (non un dubbio, un errore conclamato), la Verificabilità non può superare 11/25 e lo score totale è capato a 65/100. Distinguere DUBBIO da ERRORE è il primo discrimine.</p>
+      </div>
+      <div class="rule-card">
+        <div class="num">02</div>
+        <h4>Disciplina delle Fonti</h4>
+        <p>Ogni numero con più di una cifra significativa, data esatta, nome proprio o citazione deve essere <strong>sorgentato, riformulato come forchetta, o flaggato</strong>. Se 3+ puntuali non sono disciplinati: Verificabilità ≤ 15/25.</p>
+      </div>
+      <div class="rule-card">
+        <div class="num">03</div>
+        <h4>Controllo Punti Ciechi</h4>
+        <p>Prima di pubblicare lo score, l'IA si chiede: <em>"le 2-3 affermazioni più rischiose della mia risposta — sono davvero sicura, o ho riempito il vuoto?"</em> Se ha riempito, declassifica.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== PROMPT ============== -->
+<section id="prompt">
+  <div class="container">
+    <div class="eyebrow">Strumento operativo</div>
+    <h2>Il prompt, pronto da incollare</h2>
+    <p class="lead">Tre varianti per tre contesti d'uso. Copia, incolla nelle Custom Instructions di Claude.ai / ChatGPT, o come primo messaggio in Grok/Gemini. Funziona con qualunque LLM che supporti istruzioni persistenti.</p>
+
+    <div class="tabs" role="tablist">
+      <button class="tab active" data-target="panel-a">Standard (~20 righe)</button>
+      <button class="tab" data-target="panel-b">Mini (~10 righe)</button>
+      <button class="tab" data-target="panel-c">Ultra-compatta</button>
+    </div>
+
+    <div class="panel active" id="panel-a">
+      <div class="prompt-box">
+        <div class="prompt-header">
+          <span>VARIANTE A — Standard lite</span>
+          <button class="copy-btn" data-copy="a">Copia</button>
+        </div>
+        <div class="prompt-code" id="prompt-a">Per ogni risposta sostanziale (non saluti/conferme), applica lo SCORE DI AFFIDABILITÀ.
+
+Valuta 4 dimensioni 0-25:
+• Verificabilità — aderenza a fatti/dati/fonti reali
+• Coerenza interna — assenza di contraddizioni, logica
+• Calibrazione — onestà sui propri limiti e incertezze
+• Specificità — concretezza e applicabilità
+
+REGOLE NON NEGOZIABILI:
+1) ERRORE conclamato in risposta → Verificabilità ≤ 11/25 e totale ≤ 65/100
+2) 3+ affermazioni puntuali (numeri con &gt;1 cifra significativa, date esatte,
+   nomi propri, citazioni, riferimenti normativi) senza fonte inline
+   → Verificabilità ≤ 15/25
+3) Preferisci forchette oneste a precisioni inventate: "circa il 2%" è meglio
+   di "1,9%" se non hai fonte. INVENTARE UNA FONTE = ERRORE (regola 1)
+4) Prima di scrivere lo score, fermati e chiediti: "le 2-3 affermazioni più
+   rischiose della mia risposta — sono davvero sicura, o ho riempito il vuoto?"
+   Se hai riempito → declassifica come DA VERIFICARE
+5) Saluti/conferme/chiarimenti → "💬 Risposta conversazionale — score N/A"
+
+FORMATO IN FONDO ALLA RISPOSTA:
+
+🎯 Score: [N]/100  [🟢 ≥85 | 🟡 65-84 | 🟠 40-64 | 🔴 &lt;40]
+Verificabilità: _/25 | Coerenza: _/25 | Calibrazione: _/25 | Specificità: _/25
+🔎 Punti rischiosi: [le 2-3 affermazioni più fragili]
+⚠️ DA VERIFICARE / ERRORE: [lista puntata]</div>
+      </div>
+    </div>
+
+    <div class="panel" id="panel-b">
+      <div class="prompt-box">
+        <div class="prompt-header">
+          <span>VARIANTE B — Mini</span>
+          <button class="copy-btn" data-copy="b">Copia</button>
+        </div>
+        <div class="prompt-code" id="prompt-b">Ad ogni tua risposta sostanziale (no saluti), aggiungi in fondo lo Score di Affidabilità:
+
+Valuta 4 voci 0-25: Verificabilità, Coerenza, Calibrazione (onestà sui limiti),
+Specificità. Somma = punteggio /100.
+
+Regole:
+- Errore fattuale conclamato → totale ≤ 65 ed etichetta "ERRORE"
+- 3+ numeri/date/nomi puntuali senza fonte → Verificabilità ≤ 15
+- Preferisci "circa il X" a numeri inventati. Mai inventare fonti.
+- Prima dello score: "i punti più rischiosi della mia risposta, sono sicuro?"
+  Se no → marca DA VERIFICARE.
+
+Output: 🎯 N/100 [🟢≥85|🟡65-84|🟠40-64|🔴&lt;40] + 4 voci + ⚠️ punti da verificare.</div>
+      </div>
+    </div>
+
+    <div class="panel" id="panel-c">
+      <div class="prompt-box">
+        <div class="prompt-header">
+          <span>VARIANTE C — Ultra-compatta</span>
+          <button class="copy-btn" data-copy="c">Copia</button>
+        </div>
+        <div class="prompt-code" id="prompt-c">Score di Affidabilità: a ogni risposta sostanziale, dai punteggio /100 = Verificabilità (0-25) + Coerenza (0-25) + Calibrazione (0-25) + Specificità (0-25). Errore conclamato → cap 65. 3+ puntuali senza fonte → Verificabilità cap 15. Preferisci forchette a numeri inventati. Mai inventare fonti. Output: 🎯 N/100 🟢/🟡/🟠/🔴 + 4 voci + ⚠️ punti da verificare. Conversazione pura → "💬 score N/A".</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== ESEMPIO ============== -->
+<section class="alt" id="esempio">
+  <div class="container">
+    <div class="eyebrow">Prima e dopo</div>
+    <h2>Come cambia una risposta con Veritas attivo</h2>
+    <p class="lead">Stessa domanda, stesso modello. A sinistra la risposta nuda. A destra, con il blocco di score in fondo: l'utente vede a colpo d'occhio quanto fidarsi e quali punti meritano una verifica.</p>
+
+    <div class="compare">
+      <div class="compare-box before">
+        <div class="compare-label">Senza VERITAS</div>
+        <div class="compare-content">
+          <strong>D:</strong> Quando è stata fondata la Banca d'Italia?<br><br>
+          <strong>R:</strong> La Banca d'Italia è stata fondata nel 1893 con la legge n. 449 del 10 agosto. Nacque dalla fusione di tre istituti di emissione preesistenti, nel contesto dello scandalo della Banca Romana. Inizialmente era un istituto di diritto privato; il monopolio dell'emissione le fu attribuito solo nel 1926.
+        </div>
+      </div>
+      <div class="compare-box after">
+        <div class="compare-label">Con VERITAS</div>
+        <div class="compare-content">
+          <strong>D:</strong> Quando è stata fondata la Banca d'Italia?<br><br>
+          <strong>R:</strong> La Banca d'Italia è stata fondata nel 1893 con la legge n. 449 del 10 agosto. Nacque dalla fusione di tre istituti di emissione preesistenti, nel contesto dello scandalo della Banca Romana. Inizialmente era un istituto di diritto privato; il monopolio dell'emissione le fu attribuito solo nel 1926.
+          <div class="score-block">🎯 Score: 88/100  🟢
+Verificabilità: 22/25  •  Coerenza: 23/25
+Calibrazione: 21/25   •  Specificità: 22/25
+
+🔎 Punti rischiosi: numero esatto della
+legge (449/1893) citato a memoria.
+
+⚠️ DA VERIFICARE:
+  - numero legge 449/1893
+  - data esatta R.D.L. 1926</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== RUBRICA ============== -->
+<section class="dark" id="rubrica">
+  <div class="container">
+    <div class="eyebrow">La scala</div>
+    <h2>Quattro dimensioni, cento punti</h2>
+    <p>Ogni risposta sostanziale viene valutata su quattro assi indipendenti, ciascuno da 0 a 25 punti. La somma è il punteggio finale.</p>
+
+    <div class="dim-list">
+      <div class="dim">
+        <div class="dim-name">01 · Verificabilità</div>
+        <h4>Aderenza ai fatti</h4>
+        <p>Quanto le affermazioni sono ancorate a dati, fonti, riferimenti verificabili. La regola di taglio e la disciplina delle fonti agiscono qui.</p>
+      </div>
+      <div class="dim">
+        <div class="dim-name">02 · Coerenza interna</div>
+        <h4>Logica del ragionamento</h4>
+        <p>Assenza di contraddizioni, collegamento tra premesse e conclusioni, qualità argomentativa.</p>
+      </div>
+      <div class="dim">
+        <div class="dim-name">03 · Calibrazione</div>
+        <h4>Onestà epistemica</h4>
+        <p>Quanto la risposta dichiara esplicitamente i propri limiti, i caveat, l'incertezza. Premia la prudenza, penalizza l'assertività ingiustificata.</p>
+      </div>
+      <div class="dim">
+        <div class="dim-name">04 · Specificità</div>
+        <h4>Utilità operativa</h4>
+        <p>Quanto la risposta è concreta, dettagliata, direttamente applicabile al contesto della domanda.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== BOLLINI ============== -->
+<section>
+  <div class="container">
+    <div class="eyebrow">Soglie</div>
+    <h2>I quattro bollini</h2>
+    <p class="lead">Il punteggio numerico viene tradotto in un bollino colorato a quattro livelli — leggibile a colpo d'occhio anche da chi non guarda i dettagli della rubrica.</p>
+
+    <div class="bollini-grid">
+      <div class="bollino verde">
+        <div class="dot">🟢</div>
+        <div class="range">85—100</div>
+        <div class="label">Alta affidabilità.<br>Citabile dopo controllo di base.</div>
+      </div>
+      <div class="bollino giallo">
+        <div class="dot">🟡</div>
+        <div class="range">65—84</div>
+        <div class="label">Affidabilità media.<br>Verificare i punti specifici.</div>
+      </div>
+      <div class="bollino arancio">
+        <div class="dot">🟠</div>
+        <div class="range">40—64</div>
+        <div class="label">Bassa affidabilità.<br>Usare solo come bozza.</div>
+      </div>
+      <div class="bollino rosso">
+        <div class="dot">🔴</div>
+        <div class="range">0—39</div>
+        <div class="label">Non affidabile.<br>Non usare senza riscrittura.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== LIMITI ============== -->
+<section class="alt">
+  <div class="container">
+    <div class="eyebrow">Modestia</div>
+    <h2>Quello che Veritas non fa</h2>
+    <p class="lead">Veritas è un'auto-valutazione, non una certificazione. Dichiararne i limiti è parte del metodo.</p>
+    <div class="limits">
+      <ul>
+        <li>Non rileva gli errori che il modello non sa di avere. Misura la calibrazione consapevole, non i bias inconsci.</li>
+        <li>Non sostituisce una verifica indipendente sui contenuti ad alta posta in gioco (medici, legali, finanziari).</li>
+        <li>I quattro pesi sono uguali per semplicità. In contesti specialistici può avere senso ribilanciarli.</li>
+        <li>Lo strumento è efficace quanto il modello che lo applica. Modelli più piccoli possono degradare il Controllo Punti Ciechi in un passaggio formale.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ============== FOOTER ============== -->
+<footer>
+  <div class="container">
+    <h3>VERITAS</h3>
+    <p>Score di affidabilità per ogni IA · v3 · 2026</p>
+    <p class="credits">Verità misurata, non promessa.</p>
+    <p style="margin-top:32px; font-size:13px; color:#aaa;">Un progetto sperimentale di trasparenza per gli output degli LLM.</p>
+  </div>
+</footer>
+
+<script>
+  // Tab switching
+  document.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      const target = tab.dataset.target;
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+      tab.classList.add('active');
+      document.getElementById(target).classList.add('active');
+    });
+  });
+
+  // Copy buttons
+  document.querySelectorAll('.copy-btn').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const key = btn.dataset.copy;
+      const text = document.getElementById('prompt-' + key).innerText;
+      try {
+        await navigator.clipboard.writeText(text);
+        const original = btn.textContent;
+        btn.textContent = '✓ Copiato';
+        btn.classList.add('copied');
+        setTimeout(() => {
+          btn.textContent = original;
+          btn.classList.remove('copied');
+        }, 1800);
+      } catch (e) {
+        // Fallback for older browsers
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        btn.textContent = '✓ Copiato';
+        btn.classList.add('copied');
+        setTimeout(() => {
+          btn.textContent = 'Copia';
+          btn.classList.remove('copied');
+        }, 1800);
+      }
+    });
+  });
+</script>
+
+</body>
+</html>
