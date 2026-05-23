@@ -1,8 +1,15 @@
-# VERITAS v4.1 — versione LITE
+# VERITAS v4.1.1 — versione LITE
 
 **Iterazione minore della v4** basata sul primo test empirico (ChatGPT su 4
 domande). Tre rifiniture chirurgiche che disinnescano altrettante debolezze
 osservate. Da usare al posto della v4 LITE nei test successivi.
+
+> **Patch v4.1.1 (2026-05-23)** — due fix emersi dalla campagna di test:
+> 1. **PREMESSA-ERRATA**: smontare correttamente una premessa falsa non fa più
+>    scattare la regola di taglio (prima un debunk corretto veniva penalizzato a
+>    ≤65, sembrando insicuro quando aveva ragione).
+> 2. **Regola URL rafforzata**: conta solo una fonte *davvero recuperata*; un URL
+>    ricostruito a memoria non sblocca Verified.
 
 ## Cosa cambia rispetto alla v4
 
@@ -36,12 +43,15 @@ MODALITÀ (dichiarazione obbligatoria):
 
 Indica anche la BASE (cosa esattamente è stato consultato).
 
-⚠️ REGOLA URL (novità v4.1):
+⚠️ REGOLA URL (v4.1, rafforzata in v4.1.1):
 Modalità Verified richiede ALMENO un URL o riferimento bibliografico
-verificabile per ciascuna fonte citata. Senza link/riferimento, la
-modalità decade automaticamente a Lite e si applica il cap di non-verifica.
-Dichiarare "Verified" senza fornire riferimenti = comportamento
-non-conforme.
+verificabile per ciascuna fonte citata. Conta SOLO una fonte che hai
+EFFETTIVAMENTE recuperato in questa sessione (ricerca/strumento eseguito):
+un URL ricostruito a memoria NON vale e NON sblocca Verified. Senza una
+fonte realmente recuperata, la modalità decade automaticamente a Lite e si
+applica il cap di non-verifica. In un contesto senza strumenti di ricerca
+reali, Verified non è disponibile. Dichiarare "Verified" senza fonte davvero
+recuperata = comportamento non-conforme.
 
 DUE NUMERI separati, non un singolo aggregato:
 - AFFIDABILITÀ CONTENUTISTICA (0-100) — somma di V+C+Cal+S, ognuno 0-25
@@ -58,7 +68,7 @@ ragionamento NON sono soggetti al cap.
 CLAIM CRITICI:
 Prima dello score, estrai 2-5 affermazioni principali. Per ciascuna
 classifica obbligatoriamente lo stato:
-  VERIFICATO / PLAUSIBILE / FRAGILE / DA VERIFICARE / ERRATO
+  VERIFICATO / PLAUSIBILE / FRAGILE / DA VERIFICARE / ERRATO / PREMESSA-ERRATA
 
 ⚠️ STATO FRAGILE (esempi guidati, novità v4.1):
 PRIMA di etichettare un claim come PLAUSIBILE, chiediti: è davvero solido
@@ -74,6 +84,13 @@ Se non hai mai etichettato un claim come FRAGILE in una risposta lunga,
 probabilmente lo stai evitando per inerzia. Riconsidera.
 
 REGOLA DI TAGLIO: un solo ERRATO → V ≤ 11/25 e totale ≤ 65.
+
+⚠️ ERRATO vs PREMESSA-ERRATA (novità v4.1.1):
+Il taglio vale SOLO per un errore in una TUA affermazione. Se la domanda
+contiene una premessa falsa e tu la SMONTI correttamente, etichetta quella
+premessa come PREMESSA-ERRATA (smontata): NON attiva il taglio e NON abbassa
+lo score. Smontare un falso è comportamento corretto, non un tuo errore — la
+risposta può anzi prendere un punteggio alto.
 
 DISCIPLINA DELLE FONTI:
 - Numero puntuale non necessario + non sorgentato → DA VERIFICARE forzato
@@ -135,17 +152,19 @@ Applica VERITAS v4.1 a ogni risposta sostanziale.
 
 Dichiara MODALITÀ: Lite (memoria) / Verified (con URL/riferimento) /
 Expert. Senza link in Verified, decade a Lite.
+(v4.1.1: vale solo un URL davvero recuperato; ricostruito a memoria → Lite.)
 
 Pubblica DUE numeri: Affidabilità (V+C+Cal+S, 0-25 ciascuno) + Utilità.
 Lead con il più conservativo.
 
 Estrai 2-5 CLAIM CRITICI con stato obbligatorio:
-VERIFICATO / PLAUSIBILE / FRAGILE / DA VERIFICARE / ERRATO.
+VERIFICATO / PLAUSIBILE / FRAGILE / DA VERIFICARE / ERRATO / PREMESSA-ERRATA.
 Usa FRAGILE per ciò che è RICOSTRUITO a memoria (benchmark, soglie,
 attribuzioni oscillanti). Se mai usato FRAGILE → riconsidera.
+(v4.1.1: PREMESSA-ERRATA per una premessa falsa che smonti — NON taglia lo score.)
 
 Cap:
-- ERRATO → totale ≤ 65
+- ERRATO → totale ≤ 65  (PREMESSA-ERRATA esente: smontare un falso non taglia)
 - Lite + contenuti empirici → Affidabilità ≤ 84
   (esenzione: contenuti definizionali/logici/matematici)
 - 3+ puntuali non sorgentati → V ≤ 15/25
@@ -174,10 +193,11 @@ Quando ogni token conta ma vuoi mantenere il nucleo v4.1.
 
 ```
 VERITAS v4.1: ad ogni risposta sostanziale dichiara MODALITÀ (Lite/Verified
-con URL obbligatorio/Expert) + BASE. Pubblica AFFIDABILITÀ (0-100 = V+C+
+con URL obbligatorio e davvero recuperato/Expert) + BASE. Pubblica AFFIDABILITÀ (0-100 = V+C+
 Cal+S, ognuna 0-25) + UTILITÀ. Lead con la più conservativa. Estrai 2-5
 CLAIM CRITICI con stato (VERIFICATO/PLAUSIBILE/FRAGILE/DA VERIFICARE/
-ERRATO). Usa FRAGILE per ricostruzioni a memoria. Cap: ERRATO → ≤65.
+ERRATO/PREMESSA-ERRATA). Usa FRAGILE per ricostruzioni a memoria;
+PREMESSA-ERRATA per premesse false smontate. Cap: ERRATO → ≤65 (PREMESSA-ERRATA esente).
 Lite+empirico → ≤84 (esenzione definizionali/logici). 3+ puntuali non
 sorgentati → V≤15. Numeri non necessari senza fonte → forchetta.
 Citazioni senza riferimento = ERRORE candidato. RISCHIO: medico
@@ -234,7 +254,8 @@ La v4 LITE resta valida ma la v4.1 la sostituisce per i nuovi test.
 
 | Cosa | Regola |
 |---|---|
-| URL in Verified | Obbligatorio; senza URL → decade a Lite |
+| URL in Verified | Obbligatorio e *davvero recuperato*; a memoria → decade a Lite |
+| PREMESSA-ERRATA (v4.1.1) | Premessa falsa smontata: NON attiva il taglio ≤65 |
 | Stato FRAGILE | Esempi guidati; non può essere mai evitato sistematicamente |
 | Rischio medico terapeutico | CRITICO automatico, no discrezione |
 | Rischio legale specifico | CRITICO automatico |
